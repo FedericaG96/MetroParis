@@ -9,15 +9,15 @@ import org.jgrapht.event.TraversalListener;
 import org.jgrapht.event.VertexTraversalEvent;
 import org.jgrapht.graph.DefaultEdge;
 
-public class EdgetreversedGraphListener implements TraversalListener<Fermata, DefaultEdge>{
+public class EdgeTraversedGraphListener implements TraversalListener<Fermata, DefaultEdge>{
 
 	Graph <Fermata , DefaultEdge> grafo ;
-	Map <Fermata, Fermata> back; //mappa che punta dal basso verso l'alto
+	Map <Fermata, Fermata> backVisit; //mappa che punta dal basso verso l'alto
 	
-	public EdgetreversedGraphListener(Graph <Fermata , DefaultEdge> grafo, Map<Fermata, Fermata> back) {
+	public EdgeTraversedGraphListener(Graph <Fermata , DefaultEdge> grafo, Map<Fermata, Fermata> backVisit) {
 			super();
 			this.grafo = grafo;
-			this.back = back;
+			this.backVisit = backVisit;
 		}
 	
 	@Override
@@ -48,9 +48,22 @@ public class EdgetreversedGraphListener implements TraversalListener<Fermata, De
 		
 		/*
 		 * se il grafo è orientato, allora  source == parent, target = child
-		 * se non è orientato
+		 * se non è orientato, potrebbe essere al contrario ... 
 		 */
-		back.put(ev.getEdge().destinationVertex(), ev.getEdge().sourceVertex());
+		
+		// Devo vedere che il figlio non sia ancora una chiave della mappa
+		// e che il padre sia già presente nella mappa
+		
+		if (!backVisit.containsKey(targetVertex) && backVisit.containsKey(sourceVertex)) {
+			
+			//Caso di grafo orientato
+			backVisit.put(targetVertex, sourceVertex); 
+			//Aggiungo alla mappa l'arco che codifica il fatto che il target (figlio) si raggiunge dalla sorgente (padre)
+		
+		} else if(!backVisit.containsKey(sourceVertex) && backVisit.containsKey(targetVertex)) {
+			backVisit.put(sourceVertex, targetVertex); 
+		}
+		
 		
 	}
 	
